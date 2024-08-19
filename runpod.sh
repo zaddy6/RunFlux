@@ -1,12 +1,5 @@
 # !/bin/bash
 
-apt update
-apt install -y screen vim git-lfs
-
-screen
-
-cd /workspace
-
 # Install dependencies
 git clone https://github.com/ostris/ai-toolkit.git
 cd ai-toolkit
