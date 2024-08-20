@@ -68,11 +68,12 @@ for param in "${!yaml_params[@]}"; do
 done
 
 ## SCHEDULE UPLOADS
-cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
+# cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
 
 # Upload samples/adapters every 3 mins 
-bash -c 'while true; do huggingface-cli upload $HF_REPO samples samples; sleep 180; done' &
-bash -c 'while true; do huggingface-cli upload $HF_REPO . --include="*.safetensors"; sleep 180; done' &
+mkdir samples
+bash -c 'while true; do huggingface-cli upload $HF_REPO /workspace/ai-toolkit/output/my_first_flux_lora_v1/samples samples; sleep 180; done' &
+bash -c 'while true; do huggingface-cli upload $HF_REPO /workspace/ai-toolkit/output/my_first_flux_lora_v1 --include="*.safetensors"; sleep 180; done' &
 
 ## TRAIN
 # log in to HF
