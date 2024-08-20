@@ -38,10 +38,11 @@ export LORA_ALPHA=16
 export SAVE_STEPS=250
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export BATCH_SIZE=1
-export STEPS=4000
+export STEPS=10
 export LEARNING_RATE=0.0001
 export SEED=42
 export QUANTIZE_MODEL=true
+# export TRIGGER_WORD="p3r5on"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
 cd /workspace/ai-toolkit/config
@@ -49,7 +50,8 @@ cp examples/train_lora_flux_24gb.yaml .
 
 declare -A yaml_params=(
   [config.process[0].network.linear]=LORA_RANK
-  [config.process[0].network.linear_alpha]=LORA_ALPHA
+  [config.process[0].network.linear]=LORA_RANK
+  [config.process[0].trigger_word]=TRIGGER_WORD
   [config.process[0].save.save_every]=SAVE_STEPS
   [config.process[0].datasets[0].folder_path]=FOLDER_PATH
   [config.process[0].train.batch_size]=BATCH_SIZE
@@ -68,7 +70,7 @@ done
 # TRAIN
 cd /workspace/ai-toolkit
 
-# python run.py config/train_lora_flux_24gb.yml
+python run.py config/train_lora_flux_24gb.yml
 
 echo TRAINING DONE
 
