@@ -82,7 +82,7 @@ huggingface-cli upload $HF_REPO config.yaml
 huggingface-cli upload $HF_REPO samples samples
 huggingface-cli upload $HF_REPO *.safetensors
 
-sleep infinity
+# sleep infinity
 
-# runpodctl remove pod $RUNPOD_POD_ID
+runpodctl remove pod $RUNPOD_POD_ID
 
