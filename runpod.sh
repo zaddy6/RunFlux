@@ -33,16 +33,16 @@ cd images
 unzip ../images.zip
 
 # Setup ostris/ai-toolkit config
-export LORA_RANK=16
-export LORA_ALPHA=16
-export SAVE_STEPS=250
-export FOLDER_PATH="/workspace/ai-toolkit/images"
-export BATCH_SIZE=1
-export STEPS=10
-export LEARNING_RATE=0.0001
-export SEED=42
-export QUANTIZE_MODEL=true
+# export LORA_RANK=16
+# export LORA_ALPHA=16
+# export SAVE_STEPS=250
+# export BATCH_SIZE=1
+# export STEPS=10
+# export LEARNING_RATE=0.0001
+# export SEED=42
+# export QUANTIZE_MODEL=true
 # export TRIGGER_WORD="p3r5on"
+export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
 cd /workspace/ai-toolkit/config
@@ -50,7 +50,7 @@ cp examples/train_lora_flux_24gb.yaml .
 
 declare -A yaml_params=(
   [config.process[0].network.linear]=LORA_RANK
-  [config.process[0].network.linear]=LORA_RANK
+  [config.process[0].network.linear]=LORA_ALPHA
   [config.process[0].trigger_word]=TRIGGER_WORD
   [config.process[0].save.save_every]=SAVE_STEPS
   [config.process[0].datasets[0].folder_path]=FOLDER_PATH
@@ -77,8 +77,10 @@ python run.py config/train_lora_flux_24gb.yaml
 # UPLOAD RESULT
 
 # export HF_REPO="g-ronimo/FLUX1-dev-LoRA"
-huggingface-cli upload $HF_REPO /workspace/ai-toolkit/config/train_lora_flux_24gb.yaml
-huggingface-cli upload $HF_REPO /workspace/ai-toolkit/output/*.safetensors
+cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
+huggingface-cli upload $HF_REPO config.yaml 
+huggingface-cli upload $HF_REPO samples samples
+huggingface-cli upload $HF_REPO *.safetensors
 
 sleep infinity
 
