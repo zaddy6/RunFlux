@@ -13,7 +13,7 @@ cd /workspace
 echo ENV
 env
 
-# INSTALL ai-toolkit
+## INSTALL ai-toolkit
 git clone https://github.com/ostris/ai-toolkit.git
 cd ai-toolkit
 git submodule update --init --recursive
@@ -22,7 +22,7 @@ git submodule update --init --recursive
 # pip install -U accelerate transformers diffusers huggingface_hub #Optional, run it if you run into issues
 pip install accelerate transformers diffusers huggingface_hub torchvision safetensors lycoris-lora==1.8.3 flatten_json pyyaml oyaml tensorboard kornia invisible-watermark einops toml albumentations pydantic omegaconf k-diffusion open_clip_torch timm prodigyopt controlnet_aux==0.0.7 python-dotenv bitsandbytes hf_transfer lpips pytorch_fid optimum-quanto sentencepiece 
 
-# SETUPai-toolkit
+## SETUP ai-toolkit
 
 # Download images folder 
 # export IMAGE_ARCHIVE="https://drive.google.com/uc?export=download&id=1D7vCHhbSttZ-YAm1uABocsevDQT-fxd0"
@@ -66,7 +66,7 @@ for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" train_lora_flux_24gb.yaml > temp.yaml && mv temp.yaml train_lora_flux_24gb.yaml
 done
 
-# TRAIN
+## TRAIN
 # log in to HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 
@@ -74,13 +74,13 @@ huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 cd /workspace/ai-toolkit
 python run.py config/train_lora_flux_24gb.yaml
 
-# UPLOAD RESULT
 
+## UPLOAD RESULT
 # export HF_REPO="g-ronimo/FLUX1-dev-LoRA"
 cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
 huggingface-cli upload $HF_REPO config.yaml 
 huggingface-cli upload $HF_REPO samples samples
-huggingface-cli upload $HF_REPO *.safetensors
+huggingface-cli upload $HF_REPO . --include="*.safetensors"
 
 sleep infinity
 
