@@ -58,6 +58,7 @@ declare -A yaml_params=(
   [config.process[0].train.steps]=STEPS
   [config.process[0].train.lr]=LEARNING_RATE
   [config.process[0].sample.seed]=SEED
+  [config.process[0].sample.sample_every]=SAMPLE_STEPS
   [config.process[0].model.quantize]=QUANTIZE_MODEL
   [config.process[0].model.name_or_path]=MODEL_NAME
 )
@@ -65,6 +66,13 @@ declare -A yaml_params=(
 for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" train_lora_flux_24gb.yaml > temp.yaml && mv temp.yaml train_lora_flux_24gb.yaml
 done
+
+## SCHEDULE UPLOADS
+cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
+
+# Upload samples/adapters every 3 mins 
+bash -c 'while true; do huggingface-cli upload $HF_REPO samples samples; sleep 180; done' &
+bash -c 'while true; do huggingface-cli upload $HF_REPO . --include="*.safetensors"; sleep 180; done' &
 
 ## TRAIN
 # log in to HF
@@ -82,7 +90,6 @@ huggingface-cli upload $HF_REPO config.yaml
 huggingface-cli upload $HF_REPO samples samples
 huggingface-cli upload $HF_REPO . --include="*.safetensors"
 
-sleep infinity
-
-# runpodctl remove pod $RUNPOD_POD_ID
+# sleep infinity
+runpodctl remove pod $RUNPOD_POD_ID
 
