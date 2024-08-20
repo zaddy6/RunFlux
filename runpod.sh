@@ -66,18 +66,15 @@ for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" train_lora_flux_24gb.yaml > temp.yaml && mv temp.yaml train_lora_flux_24gb.yaml
 done
 
-
 # TRAIN
-cd /workspace/ai-toolkit
-
-python run.py config/train_lora_flux_24gb.yaml
-
-echo TRAINING DONE
-
-# UPLOAD RESULT
-
 # log in to HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
+
+# start ai-toolkit
+cd /workspace/ai-toolkit
+python run.py config/train_lora_flux_24gb.yaml
+
+# UPLOAD RESULT
 
 # export HF_REPO="g-ronimo/FLUX1-dev-LoRA"
 huggingface-cli upload $HF_REPO /workspace/ai-toolkit/config/train_lora_flux_24gb.yaml
