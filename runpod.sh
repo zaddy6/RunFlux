@@ -70,7 +70,7 @@ done
 # TRAIN
 cd /workspace/ai-toolkit
 
-python run.py config/train_lora_flux_24gb.yml
+python run.py config/train_lora_flux_24gb.yaml
 
 echo TRAINING DONE
 
