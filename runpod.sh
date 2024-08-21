@@ -79,15 +79,18 @@ bash -c 'while true; do huggingface-cli upload $HF_REPO /workspace/ai-toolkit/ou
 # log in to HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 
-# start ai-toolkit
+# Upload ai-toolkit config
+cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
+huggingface-cli upload $HF_REPO config.yaml 
+
+# Start ai-toolkit
 cd /workspace/ai-toolkit
 python run.py config/train_lora_flux_24gb.yaml
-
 
 ## UPLOAD RESULT
 # export HF_REPO="g-ronimo/FLUX1-dev-LoRA"
 cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
-huggingface-cli upload $HF_REPO config.yaml 
+# huggingface-cli upload $HF_REPO config.yaml 
 huggingface-cli upload $HF_REPO samples samples
 huggingface-cli upload $HF_REPO . --include="*.safetensors"
 
