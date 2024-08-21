@@ -80,8 +80,7 @@ bash -c 'while true; do huggingface-cli upload $HF_REPO /workspace/ai-toolkit/ou
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 
 # Upload ai-toolkit config
-cd /workspace/ai-toolkit/output/my_first_flux_lora_v1
-huggingface-cli upload $HF_REPO config.yaml 
+huggingface-cli upload $HF_REPO /workspace/ai-toolkit/config/train_lora_flux_24gb.yaml
 
 # Start ai-toolkit
 cd /workspace/ai-toolkit
