@@ -68,6 +68,6 @@ huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1/samples samples
 huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors"
 huggingface-cli upload $HF_REPO ai-toolkit.log
 
-sleep infinity
-# runpodctl remove pod $RUNPOD_POD_ID
+# sleep infinity
+runpodctl remove pod $RUNPOD_POD_ID
 
