@@ -56,9 +56,9 @@ huggingface-cli upload $HF_REPO config/train_lora_flux_24gb.yaml
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
 mkdir -p output/my_first_flux_lora_v1/samples
 touch ai-toolkit.log
-bash -c 'while true; do huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1/samples samples; sleep 180; done' &
-bash -c 'while true; do huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors"; sleep 180; done' &
-bash -c 'while true; do huggingface-cli upload $HF_REPO ai-toolkit.log; sleep 180; done' &
+huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1/samples samples --every=3 &
+huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors" --every=3 &
+huggingface-cli upload $HF_REPO ai-toolkit.log --every=3 &
 
 ## TRAIN
 python run.py config/train_lora_flux_24gb.yaml | tee ai-toolkit.log
