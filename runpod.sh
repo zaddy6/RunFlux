@@ -55,13 +55,12 @@ huggingface-cli upload $HF_REPO config/train_lora_flux_24gb.yaml
 
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
 mkdir -p output/my_first_flux_lora_v1/samples
-touch output/my_first_flux_lora_v1/samples/a
 touch ai-toolkit.log
 
 huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors" --every=3 &
 huggingface-cli upload $HF_REPO ai-toolkit.log --every=3 &
 
-# (for some reason --every does not uploady anything at all with the samples dir, no error, no idea -> bash loop)
+# (for some reason --every does not upload with samples/ dir, no error, no idea -> bash loop)
 bash -c 'while true; do huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1/samples samples; sleep 180; done' &
 
 ## TRAIN
