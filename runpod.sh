@@ -23,7 +23,7 @@ cd /workspace/ai-toolkit
 
 # Download images 
 wget -O images.zip "${IMAGE_ARCHIVE}"
-unzip ../images.zip -d images
+unzip images.zip 
 
 # Write ai-toolkit config with params passed from Colab notebook
 export FOLDER_PATH="/workspace/ai-toolkit/images"
