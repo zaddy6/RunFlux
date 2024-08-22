@@ -82,9 +82,13 @@ huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 # Upload ai-toolkit config
 huggingface-cli upload $HF_REPO /workspace/ai-toolkit/config/train_lora_flux_24gb.yaml
 
+# Upload logs every 3 mins 
+touch ai-toolkit.log
+bash -c 'while true; do huggingface-cli upload $HF_REPO ai-toolkit.log; sleep 180; done' &
+
 # Start ai-toolkit
 cd /workspace/ai-toolkit
-python run.py config/train_lora_flux_24gb.yaml
+python run.py config/train_lora_flux_24gb.yaml | tee ai-toolkit.log
 
 ## UPLOAD RESULT
 # export HF_REPO="g-ronimo/FLUX1-dev-LoRA"
