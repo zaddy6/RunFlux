@@ -61,9 +61,9 @@ huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safete
 huggingface-cli upload $HF_REPO ai-toolkit.log --every=3 &
 
 ## TRAIN
-python run.py config/train_lora_flux_24gb.yaml | tee ai-toolkit.log
+python run.py config/train_lora_flux_24gb.yaml 2>&1 | tee ai-toolkit.log
 
-## UPLOAD RESULTS
+## UPLOAD RESULTS one last time
 huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1/samples samples
 huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors"
 huggingface-cli upload $HF_REPO ai-toolkit.log
