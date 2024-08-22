@@ -1,6 +1,6 @@
 # RunFlux
 
-<a target="_blank" href="https://drive.google.com/file/d/1Hu-Vb3SHmmNJtjtSE8MLCCTO1razFQ1N/view?usp=sharing">
+<a target="_blank" href="https://colab.research.google.com/github/geronimi73/RunFlux/blob/main/RunFlux.ipynb">
   <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open In Colab"/>
 </a>
 
