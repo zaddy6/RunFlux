@@ -29,7 +29,7 @@ unzip ../images.zip -d images
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
-cp examples/train_lora_flux_24gb.yaml config/
+cp config/examples/train_lora_flux_24gb.yaml config/
 
 declare -A yaml_params=(
   [config.process[0].network.linear]=LORA_RANK
