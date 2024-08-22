@@ -55,6 +55,7 @@ huggingface-cli upload $HF_REPO config/train_lora_flux_24gb.yaml
 
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
 mkdir -p output/my_first_flux_lora_v1/samples
+touch output/my_first_flux_lora_v1/samples/a
 touch ai-toolkit.log
 
 huggingface-cli upload $HF_REPO output/my_first_flux_lora_v1 --include="*.safetensors" --every=3 &
