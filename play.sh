@@ -13,7 +13,7 @@ cd /workspace
 git clone https://github.com/ostris/ai-toolkit.git
 cd ai-toolkit
 git submodule update --init --recursive
-pip install accelerate transformers diffusers huggingface_hub torchvision safetensors lycoris-lora==1.8.3 flatten_json pyyaml oyaml tensorboard kornia invisible-watermark einops toml albumentations pydantic omegaconf k-diffusion open_clip_torch timm prodigyopt controlnet_aux==0.0.7 python-dotenv bitsandbytes hf_transfer lpips pytorch_fid optimum-quanto sentencepiece 
+pip install accelerate transformers diffusers huggingface_hub torchvision safetensors lycoris-lora==1.8.3 flatten_json pyyaml oyaml tensorboard kornia invisible-watermark einops toml albumentations pydantic omegaconf k-diffusion open_clip_torch timm prodigyopt controlnet_aux==0.0.7 python-dotenv bitsandbytes hf_transfer lpips pytorch_fid optimum-quanto sentencepiece PyYAML
 
 ## LOGIN HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
@@ -25,38 +25,58 @@ cd /workspace/ai-toolkit
 wget -O images.zip "${IMAGE_ARCHIVE}"
 unzip images.zip -d images
 
-# Extract prompts from unzipped YAML file and add "[trigger] style:" to each
-PROMPTS=$(yq eval '.prompts[]' images/prompts.yaml | sed 's/^/"[trigger] style: /;s/$/"/' | tr '\n' ',' | sed 's/,$//')
+# Replace the YAML modification section with Python script
+python3 << END
+import yaml
+import os
 
+# Load the YAML file
+config_file = f"config/{os.environ['NAME']}_train_lora_flux_24gb.yaml"
+with open(config_file, 'r') as file:
+    config = yaml.safe_load(file)
 
-# Write ai-toolkit config with params passed from Colab notebook
-export FOLDER_PATH="/workspace/ai-toolkit/images"
-export MODEL_NAME="black-forest-labs/FLUX.1-dev"
+# Update the configuration
+yaml_params = {
+    'config.name': 'NAME',
+    'config.process[0].network.linear': 'LORA_RANK',
+    'config.process[0].network.alpha': 'LORA_ALPHA',
+    'config.process[0].trigger_word': 'TRIGGER_WORD',
+    'config.process[0].save.save_every': 'SAVE_STEPS',
+    'config.process[0].datasets[0].folder_path': 'FOLDER_PATH',
+    'config.process[0].train.batch_size': 'BATCH_SIZE',
+    'config.process[0].train.steps': 'STEPS',
+    'config.process[0].train.lr': 'LEARNING_RATE',
+    'config.process[0].sample.seed': 'SEED',
+    'config.process[0].sample.sample_every': 'SAMPLE_STEPS',
+    'config.process[0].model.quantize': 'QUANTIZE_MODEL',
+    'config.process[0].model.name_or_path': 'MODEL_NAME'
+}
 
-cp config/examples/train_lora_flux_24gb.yaml config/${NAME}_train_lora_flux_24gb.yaml
+for yaml_path, env_var in yaml_params.items():
+    keys = yaml_path.split('.')
+    current = config
+    for key in keys[:-1]:
+        if key.endswith(']'):
+            key, index = key[:-1].split('[')
+            current = current[key][int(index)]
+        else:
+            current = current[key]
+    current[keys[-1]] = os.environ[env_var]
 
-declare -A yaml_params=(
-  [config.name]=NAME
-  [config.process[0].network.linear]=LORA_RANK
-  [config.process[0].network.linear]=LORA_ALPHA
-  [config.process[0].trigger_word]=TRIGGER_WORD
-  [config.process[0].save.save_every]=SAVE_STEPS
-  [config.process[0].datasets[0].folder_path]=FOLDER_PATH
-  [config.process[0].train.batch_size]=BATCH_SIZE
-  [config.process[0].train.steps]=STEPS
-  [config.process[0].train.lr]=LEARNING_RATE
-  [config.process[0].sample.seed]=SEED
-  [config.process[0].sample.sample_every]=SAMPLE_STEPS
-  [config.process[0].model.quantize]=QUANTIZE_MODEL
-  [config.process[0].model.name_or_path]=MODEL_NAME
-)
+# Load prompts from the YAML file
+with open('images/prompts.yaml', 'r') as file:
+    prompts_data = yaml.safe_load(file)
 
-for param in "${!yaml_params[@]}"; do
-  yq eval ".${param} = env(${yaml_params[$param]})" config/${NAME}_train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/${NAME}_train_lora_flux_24gb.yaml
-done
+# Modify prompts
+modified_prompts = [f'[trigger] style: {prompt}' for prompt in prompts_data['prompts']]
 
-# Replace sampler.prompts with extracted prompts
-yq eval ".config.process[0].sample.prompts = [$PROMPTS]" config/${NAME}_train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/${NAME}_train_lora_flux_24gb.yaml
+# Update the prompts in the config
+config['config']['process'][0]['sample']['prompts'] = modified_prompts
+
+# Save the updated configuration
+with open(config_file, 'w') as file:
+    yaml.dump(config, file)
+END
 
 # upload config
 huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml
