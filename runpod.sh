@@ -32,6 +32,7 @@ export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 cp config/examples/train_lora_flux_24gb.yaml config/
 
 declare -A yaml_params=(
+  [config.name]=NAME
   [config.process[0].network.linear]=LORA_RANK
   [config.process[0].network.linear]=LORA_ALPHA
   [config.process[0].trigger_word]=TRIGGER_WORD
