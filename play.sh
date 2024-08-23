@@ -25,6 +25,10 @@ cd /workspace/ai-toolkit
 wget -O images.zip "${IMAGE_ARCHIVE}"
 unzip images.zip -d images
 
+# Extract prompts from unzipped YAML file and add "[trigger] style:" to each
+PROMPTS=$(yq eval '.prompts[]' images/prompts.yaml | sed 's/^/"[trigger] style: /;s/$/"/' | tr '\n' ',' | sed 's/,$//')
+
+
 # Write ai-toolkit config with params passed from Colab notebook
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
@@ -50,6 +54,9 @@ declare -A yaml_params=(
 for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" config/train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/train_lora_flux_24gb.yaml
 done
+
+# Replace sampler.prompts with extracted prompts
+yq eval ".config.process[0].sample.prompts = [$PROMPTS]" config/train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/train_lora_flux_24gb.yaml
 
 # upload config
 huggingface-cli upload $HF_REPO config/train_lora_flux_24gb.yaml
