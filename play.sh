@@ -25,17 +25,22 @@ cd /workspace/ai-toolkit
 wget -O images.zip "${IMAGE_ARCHIVE}"
 unzip images.zip -d images
 
-# Replace the YAML modification section with Python script
+# Set environment variables
+export FOLDER_PATH="/workspace/ai-toolkit/images"
+export MODEL_NAME="black-forest-labs/FLUX.1-dev"
+
+# Copy example config
+cp config/examples/train_lora_flux_24gb.yaml config/${NAME}_train_lora_flux_24gb.yaml
+
+# Update the configuration using Python
 python3 << END
 import yaml
 import os
 
-# Load the YAML file
 config_file = f"config/{os.environ['NAME']}_train_lora_flux_24gb.yaml"
 with open(config_file, 'r') as file:
     config = yaml.safe_load(file)
 
-# Update the configuration
 yaml_params = {
     'config.name': 'NAME',
     'config.process[0].network.linear': 'LORA_RANK',
@@ -78,7 +83,7 @@ with open(config_file, 'w') as file:
     yaml.dump(config, file)
 END
 
-# upload config
+# Upload config
 huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml
 
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
@@ -88,7 +93,7 @@ touch ${NAME}_ai-toolkit.log
 huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors" --every=3 &
 huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log --every=3 &
 
-# (for some reason --every does not upload with samples/ dir, no error, no idea -> bash loop)
+# Upload samples directory
 bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples samples; sleep 180; done' &
 
 ## TRAIN
@@ -99,5 +104,5 @@ huggingface-cli upload $HF_REPO output/$NAME/samples ${NAME}_samples
 huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors"
 huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log
 
-# sleep infinity
+# Remove the pod
 runpodctl remove pod $RUNPOD_POD_ID
