@@ -84,10 +84,21 @@ huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml $NAME/c
 mkdir -p output/$NAME/samples
 touch ${NAME}_ai-toolkit.log
 
-huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors" $NAME/adapters --every=3 &
+# Function to upload adapter
+upload_adapter() {
+    while true; do
+        echo "Uploading adapter:"
+        huggingface-cli upload "$HF_REPO" output/$NAME/${NAME}.safetensors "$NAME/adapters/${NAME}.safetensors"
+        sleep 180  # Wait for 3 minutes
+    done
+}
+
+# Start adapter upload in background
+upload_adapter &
+
 huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
 
-# (for some reason --every does not upload with samples/ dir, no error, no idea -> bash loop)
+# Upload samples every 3 minutes
 bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
 
 ## TRAIN
@@ -95,8 +106,11 @@ python run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-too
 
 ## UPLOAD RESULTS one last time
 huggingface-cli upload "$HF_REPO" "output/$NAME/samples" "$NAME/samples"
-huggingface-cli upload "$HF_REPO" "output/$NAME" --include="*.safetensors" "$NAME/adapters"
+huggingface-cli upload "$HF_REPO" "output/$NAME/${NAME}.safetensors" "$NAME/adapters/${NAME}.safetensors"
 huggingface-cli upload "$HF_REPO" "${NAME}_ai-toolkit.log" "$NAME/log.txt"
+
+# Kill background jobs
+kill $(jobs -p)
 
 # sleep infinity
 # runpodctl remove pod $RUNPOD_POD_ID
