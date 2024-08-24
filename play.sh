@@ -25,10 +25,6 @@ cd /workspace/ai-toolkit
 wget -O images.zip "${IMAGE_ARCHIVE}"
 unzip images.zip -d images
 
-# Extract prompts from unzipped YAML file and add "[trigger] style:" to each
-PROMPTS=$(yq eval '.prompts[]' images/prompts.yaml | sed 's/^/"[trigger] style: /;s/$/"/' | tr '\n' ',' | sed 's/,$//')
-
-
 # Write ai-toolkit config with params passed from Colab notebook
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
@@ -55,29 +51,52 @@ for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" config/${NAME}_train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/${NAME}_train_lora_flux_24gb.yaml
 done
 
-# Replace sampler.prompts with extracted prompts
-yq eval ".config.process[0].sample.prompts = [$PROMPTS]" config/${NAME}_train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/${NAME}_train_lora_flux_24gb.yaml
+# Replace the YAML manipulation with a Python script
+python3 << EOF
+import yaml
+import os
+
+# Read the YAML file
+with open('images/prompts.yaml', 'r') as file:
+    data = yaml.safe_load(file)
+
+# Extract and modify prompts
+trigger_word = os.environ['TRIGGER_WORD']
+prompts = [f'{trigger_word} style: {prompt}' for prompt in data['prompts']]
+
+# Read the existing config file
+config_file = f"config/{os.environ['NAME']}_train_lora_flux_24gb.yaml"
+with open(config_file, 'r') as file:
+    config = yaml.safe_load(file)
+
+# Update the prompts in the config
+config['config']['process'][0]['sample']['prompts'] = prompts
+
+# Write the updated config back to the file
+with open(config_file, 'w') as file:
+    yaml.dump(config, file)
+EOF
 
 # upload config
-huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml
+huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml $NAME/config.yaml
 
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
 mkdir -p output/$NAME/samples
 touch ${NAME}_ai-toolkit.log
 
-huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors" --every=3 &
-huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log --every=3 &
+huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors" $NAME/adapters --every=3 &
+huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
 
 # (for some reason --every does not upload with samples/ dir, no error, no idea -> bash loop)
-bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples samples; sleep 180; done' &
+bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
 
 ## TRAIN
 python run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-toolkit.log
 
 ## UPLOAD RESULTS one last time
-huggingface-cli upload $HF_REPO output/$NAME/samples ${NAME}_samples
-huggingface-cli upload $HF_REPO output/$NAME --include="*.safetensors"
-huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log
+huggingface-cli upload "$HF_REPO" "output/$NAME/samples" "$NAME/samples"
+huggingface-cli upload "$HF_REPO" "output/$NAME" --include="*.safetensors" "$NAME/adapters"
+huggingface-cli upload "$HF_REPO" "${NAME}_ai-toolkit.log" "$NAME/log.txt"
 
 # sleep infinity
 runpodctl remove pod $RUNPOD_POD_ID
