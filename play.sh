@@ -86,15 +86,20 @@ touch ${NAME}_ai-toolkit.log
 
 upload_adapter() {
     while true; do
-        echo "Uploading latest checkpoint:"
-        latest_checkpoint=$(ls -t output/$NAME/${NAME}_*.safetensors | head -n1)
-        if [ -n "$latest_checkpoint" ]; then
-            checkpoint_name=$(basename "$latest_checkpoint")
-            huggingface-cli upload "$HF_REPO" "$latest_checkpoint" "$NAME/adapters/$checkpoint_name"
+        echo "Checking for checkpoints..."
+        if [ -d "output/$NAME" ]; then
+            latest_checkpoint=$(find "output/$NAME" -name "${NAME}_*.safetensors" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
+            if [ -n "$latest_checkpoint" ]; then
+                echo "Uploading latest checkpoint: $latest_checkpoint"
+                checkpoint_name=$(basename "$latest_checkpoint")
+                huggingface-cli upload "$HF_REPO" "$latest_checkpoint" "$NAME/adapters/$checkpoint_name"
+            else
+                echo "No checkpoint found in output/$NAME"
+            fi
         else
-            echo "No checkpoint found."
+            echo "Directory output/$NAME does not exist yet"
         fi
-        sleep 600  # Wait for 3 minutes
+        sleep 180  # Wait for 3 minutes
     done
 }
 
