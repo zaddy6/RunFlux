@@ -99,4 +99,4 @@ huggingface-cli upload "$HF_REPO" "output/$NAME" --include="*.safetensors" "$NAM
 huggingface-cli upload "$HF_REPO" "${NAME}_ai-toolkit.log" "$NAME/log.txt"
 
 # sleep infinity
-runpodctl remove pod $RUNPOD_POD_ID
+# runpodctl remove pod $RUNPOD_POD_ID
