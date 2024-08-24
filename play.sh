@@ -84,12 +84,17 @@ huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml $NAME/c
 mkdir -p output/$NAME/samples
 touch ${NAME}_ai-toolkit.log
 
-# Function to upload adapter
 upload_adapter() {
     while true; do
-        echo "Uploading adapter:"
-        huggingface-cli upload "$HF_REPO" output/$NAME/${NAME}.safetensors "$NAME/adapters/${NAME}.safetensors"
-        sleep 180  # Wait for 3 minutes
+        echo "Uploading latest checkpoint:"
+        latest_checkpoint=$(ls -t output/$NAME/${NAME}_*.safetensors | head -n1)
+        if [ -n "$latest_checkpoint" ]; then
+            checkpoint_name=$(basename "$latest_checkpoint")
+            huggingface-cli upload "$HF_REPO" "$latest_checkpoint" "$NAME/adapters/$checkpoint_name"
+        else
+            echo "No checkpoint found."
+        fi
+        sleep 600  # Wait for 3 minutes
     done
 }
 
