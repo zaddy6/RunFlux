@@ -40,6 +40,7 @@ declare -A yaml_params=(
   [config.process[0].datasets[0].folder_path]=FOLDER_PATH
   [config.process[0].train.batch_size]=BATCH_SIZE
   [config.process[0].train.steps]=STEPS
+  [config.process[0].train.gradient_accumulation_steps]=GRADIENT
   [config.process[0].train.optimizer]=OPTIMIZER
   [config.process[0].train.lr]=LEARNING_RATE
   [config.process[0].sample.seed]=SEED
