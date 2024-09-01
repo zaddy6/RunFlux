@@ -121,6 +121,12 @@ huggingface-cli upload "$HF_REPO" "output/$NAME/samples" "$NAME/samples"
 huggingface-cli upload "$HF_REPO" "output/$NAME/${NAME}.safetensors" "$NAME/adapters/${NAME}.safetensors"
 huggingface-cli upload "$HF_REPO" "${NAME}_ai-toolkit.log" "$NAME/log.txt"
 
+# Send webhook to api.simplicty.ai
+curl -X POST https://api.simplicty.ai/custom/webhook \
+     -H "Content-Type: application/json" \
+     -d "{\"status\":\"COMPLETED\",\"training_id\":\"$NAME\",\"weight_url\":\"https://huggingface.co/$HF_REPO/resolve/main/$NAME/adapters/${NAME}.safetensors\"}"
+
+
 # Kill background jobs
 kill $(jobs -p)
 
