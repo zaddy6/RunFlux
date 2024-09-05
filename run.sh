@@ -125,7 +125,7 @@ huggingface-cli upload "$HF_REPO" "${NAME}_ai-toolkit.log" "$NAME/log.txt"
 if [ -n "$WEBHOOK" ]; then
     curl -X POST "$WEBHOOK" \
          -H "Content-Type: application/json" \
-         -d "{\"status\":\"PENDING\",\"training_id\":\"$NAME\",\"weight_url\":\"https://huggingface.co/$HF_REPO/resolve/main/$NAME/adapters/${NAME}.safetensors\"}"
+         -d "{\"status\":\"COMPLETED\",\"training_id\":\"$NAME\",\"weight_url\":\"https://huggingface.co/$HF_REPO/resolve/main/$NAME/adapters/${NAME}.safetensors\"}"
 else
     echo "WEBHOOK environment variable is not set. Skipping webhook call."
 fi
