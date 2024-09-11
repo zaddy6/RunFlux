@@ -29,7 +29,11 @@ unzip images.zip -d images
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
-cp config/examples/train_lora_flux_24gb.yaml config/${NAME}_train_lora_flux_24gb.yaml
+wget https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
+
+
+
+cp config.yaml config/${NAME}_train_lora_flux_24gb.yaml
 
 declare -A yaml_params=(
   [config.name]=NAME
