@@ -29,7 +29,7 @@ unzip images.zip -d images
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
-wget https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
+wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
 
 
 
