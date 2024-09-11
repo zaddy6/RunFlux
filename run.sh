@@ -28,6 +28,8 @@ unzip images.zip -d images
 # Write ai-toolkit config with params passed from Colab notebook
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
+wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
+
 
 cp config/examples/train_lora_flux_24gb.yaml config/${NAME}_train_lora_flux_24gb.yaml
 
