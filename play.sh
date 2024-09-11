@@ -135,4 +135,4 @@ curl -X POST https://api.simplicty.ai/custom/webhook \
 kill $(jobs -p)
 
 # sleep infinity
-runpodctl remove pod $RUNPOD_POD_ID
+# runpodctl remove pod $RUNPOD_POD_ID
