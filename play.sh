@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ## Install stuff we need
-add-apt-repository -y ppa:rmescandon/yq
-apt update
-apt install -y screen vim git-lfs unzip yq
+# add-apt-repository -y ppa:rmescandon/yq
+# apt update
+# apt install -y screen vim git-lfs unzip yq
 
 # Debug
 env
@@ -31,7 +31,7 @@ export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
 wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
 
-
+cd /workspace/ai-toolkit
 
 cp config.yaml config/${NAME}_train_lora_flux_24gb.yaml
 
