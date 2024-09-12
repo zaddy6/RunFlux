@@ -31,10 +31,6 @@ export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
 wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
 
-cd /workspace/ai-toolkit
-
-pwd
-
 cp config.yaml config/${NAME}_train_lora_flux_24gb.yaml
 
 declare -A yaml_params=(
