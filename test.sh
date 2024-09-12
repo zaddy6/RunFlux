@@ -4,9 +4,6 @@
 cd /workspace
 git clone https://github.com/zaddy6/RunFlux.git
 
-# Execute play.sh
-bash /workspace/RunFlux/play.sh
-
 # Debug
 env
 
