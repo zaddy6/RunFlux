@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Clone the repository
-cd /workspace
-git clone https://github.com/zaddy6/RunFlux.git
+# cd /workspace
+# git clone https://github.com/zaddy6/RunFlux.git
 
 # Debug
 env
