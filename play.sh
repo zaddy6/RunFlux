@@ -33,6 +33,8 @@ wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.c
 
 cd /workspace/ai-toolkit
 
+pwd
+
 cp config.yaml config/${NAME}_train_lora_flux_24gb.yaml
 
 declare -A yaml_params=(
