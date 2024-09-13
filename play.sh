@@ -126,7 +126,7 @@ touch ${NAME}_ai-toolkit.log
 # # Start adapter upload in background
 # upload_adapter &
 
-huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
+# huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
 
 # # Upload samples every 3 minutes
 # bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
