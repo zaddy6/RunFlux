@@ -29,9 +29,15 @@ unzip images.zip -d images
 export FOLDER_PATH="/workspace/ai-toolkit/images"
 export MODEL_NAME="black-forest-labs/FLUX.1-dev"
 
+echo "Starting Config download modification..."
+
 wget --header="Authorization: Bearer ${HUGGINGFACE_TOKEN}" https://huggingface.co/zaddyzaddy/simple-config/resolve/main/config.yaml
 
+echo "End config download modification..."
+
 cp config.yaml config/${NAME}_train_lora_flux_24gb.yaml
+
+echo "Starting YQ modification..."
 
 declare -A yaml_params=(
   [config.name]=NAME
@@ -54,6 +60,10 @@ declare -A yaml_params=(
 for param in "${!yaml_params[@]}"; do
   yq eval ".${param} = env(${yaml_params[$param]})" config/${NAME}_train_lora_flux_24gb.yaml > config/temp.yaml && mv config/temp.yaml config/${NAME}_train_lora_flux_24gb.yaml
 done
+
+echo "End YQ modification..."
+
+echo "Starting Python config modification..."
 
 # Replace the YAML manipulation with a Python script
 python3 << EOF
@@ -81,8 +91,14 @@ with open(config_file, 'w') as file:
     yaml.dump(config, file)
 EOF
 
+echo "End Python config modification..."
+
+echo "Starting HF upload modification..."
+
 # upload config
 huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml $NAME/config.yaml
+
+echo "End HF upload modification..."
 
 ## SCHEDULE UPLOADS of samples/adapters every 3 mins 
 mkdir -p output/$NAME/samples
