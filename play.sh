@@ -18,6 +18,8 @@ env
 ## LOGIN HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
 
+huggingface-cli download black-forest-labs/FLUX.1-dev
+
 ## SETUP ai-toolkit
 cd /workspace/ai-toolkit
 
