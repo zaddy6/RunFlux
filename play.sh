@@ -5,6 +5,10 @@
 # apt update
 # apt install -y screen vim git-lfs unzip yq
 
+pip install huggingface_hub[hf_transfer]
+
+export HF_HUB_ENABLE_HF_TRANSFER=1
+
 # Debug
 env
 
@@ -17,8 +21,6 @@ env
 
 ## LOGIN HF
 huggingface-cli login --token $HUGGINGFACE_TOKEN --add-to-git-credential
-
-huggingface-cli download black-forest-labs/FLUX.1-dev
 
 ## SETUP ai-toolkit
 cd /workspace/ai-toolkit
