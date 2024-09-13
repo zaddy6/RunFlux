@@ -115,8 +115,11 @@ huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
 # Upload samples every 3 minutes
 bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
 
+# ## TRAIN
+# python run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-toolkit.log
+
 ## TRAIN
-python run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-toolkit.log
+python -u run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-toolkit.log
 
 ## UPLOAD RESULTS one last time
 huggingface-cli upload "$HF_REPO" "output/$NAME/samples" "$NAME/samples"
