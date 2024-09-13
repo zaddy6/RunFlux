@@ -88,32 +88,32 @@ huggingface-cli upload $HF_REPO config/${NAME}_train_lora_flux_24gb.yaml $NAME/c
 mkdir -p output/$NAME/samples
 touch ${NAME}_ai-toolkit.log
 
-upload_adapter() {
-    while true; do
-        echo "Checking for checkpoints..."
-        if [ -d "output/$NAME" ]; then
-            latest_checkpoint=$(find "output/$NAME" -name "${NAME}_*.safetensors" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
-            if [ -n "$latest_checkpoint" ]; then
-                echo "Uploading latest checkpoint: $latest_checkpoint"
-                checkpoint_name=$(basename "$latest_checkpoint")
-                huggingface-cli upload "$HF_REPO" "$latest_checkpoint" "$NAME/adapters/$checkpoint_name"
-            else
-                echo "No checkpoint found in output/$NAME"
-            fi
-        else
-            echo "Directory output/$NAME does not exist yet"
-        fi
-        sleep 180  # Wait for 3 minutes
-    done
-}
+# upload_adapter() {
+#     while true; do
+#         echo "Checking for checkpoints..."
+#         if [ -d "output/$NAME" ]; then
+#             latest_checkpoint=$(find "output/$NAME" -name "${NAME}_*.safetensors" -type f -printf '%T@ %p\n' | sort -n | tail -1 | cut -f2- -d" ")
+#             if [ -n "$latest_checkpoint" ]; then
+#                 echo "Uploading latest checkpoint: $latest_checkpoint"
+#                 checkpoint_name=$(basename "$latest_checkpoint")
+#                 huggingface-cli upload "$HF_REPO" "$latest_checkpoint" "$NAME/adapters/$checkpoint_name"
+#             else
+#                 echo "No checkpoint found in output/$NAME"
+#             fi
+#         else
+#             echo "Directory output/$NAME does not exist yet"
+#         fi
+#         sleep 180  # Wait for 3 minutes
+#     done
+# }
 
-# Start adapter upload in background
-upload_adapter &
+# # Start adapter upload in background
+# upload_adapter &
 
 huggingface-cli upload $HF_REPO ${NAME}_ai-toolkit.log $NAME/log.txt --every=3 &
 
-# Upload samples every 3 minutes
-bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
+# # Upload samples every 3 minutes
+# bash -c 'while true; do huggingface-cli upload $HF_REPO output/$NAME/samples $NAME/samples; sleep 180; done' &
 
 ## TRAIN
 python run.py config/${NAME}_train_lora_flux_24gb.yaml 2>&1 | tee ${NAME}_ai-toolkit.log
